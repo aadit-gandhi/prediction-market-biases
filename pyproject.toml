@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pmbias"
+version = "0.1.0"
+description = "Testing behavioral biases in Kalshi and Polymarket prices"
+requires-python = ">=3.10"
+dependencies = ["numpy", "pandas", "duckdb", "requests", "matplotlib"]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

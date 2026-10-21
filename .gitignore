@@ -1,0 +1,7 @@
+data/
+*.duckdb
+__pycache__/
+.ipynb_checkpoints/
+*.egg-info/
+.venv/
+.pytest_cache/

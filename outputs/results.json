@@ -1,0 +1,66 @@
+{
+  "brier": 0.13408498666666666,
+  "H1_calibration_slope": {
+    "est": 1.3471248100716917,
+    "ci_low": 1.2868469308438322,
+    "ci_high": 1.413583349176,
+    "p_boot": 0.000999000999000999,
+    "n_boot": 1000,
+    "intercept": -0.0271934998631747
+  },
+  "H2_longshot_gap": {
+    "est": -0.0274732824427481,
+    "ci_low": -0.03462167132171769,
+    "ci_high": -0.01919747113426442,
+    "p_boot": 0.000999000999000999,
+    "n_boot": 1000
+  },
+  "H2_favorite_gap": {
+    "est": 0.03348387096774194,
+    "ci_low": 0.02101981575555388,
+    "ci_high": 0.04462931539035131,
+    "p_boot": 0.000999000999000999,
+    "n_boot": 1000
+  },
+  "H3_heaping_50c": {
+    "est": 0.9865313975861466,
+    "ci_low": 0.9367413243779938,
+    "ci_high": 1.0397556977907876,
+    "p_boot": 0.6066666666666667,
+    "n_boot": 300
+  },
+  "H4_n_jumps": 13551,
+  "H4_continuation_DESCRIPTIVE_ONLY": {
+    "est": 0.0466334587853295,
+    "ci_low": 0.04505623511251281,
+    "ci_high": 0.04830554789681046,
+    "p_boot": 0.000999000999000999,
+    "n_boot": 1000
+  },
+  "H4_post_jump_gap": {
+    "est": 0.1399837650357907,
+    "ci_low": 0.13391358573479917,
+    "ci_high": 0.14655416517313988,
+    "p_boot": 0.000999000999000999,
+    "n_boot": 1000
+  },
+  "H4_note": "NOT VALIDATED: the synthetic generator's late-horizon prices drift toward the outcome (not a martingale), so H4 results on synthetic data are an artifact. Build a martingale-based simulator (Week 6) before trusting H4 on real data.",
+  "holm_adjusted_p": {
+    "H1_calibration_slope": 0.003996003996003996,
+    "H2_longshot_gap": 0.003996003996003996,
+    "H2_favorite_gap": 0.003996003996003996,
+    "H3_heaping_50c": 0.6066666666666667
+  },
+  "edge_after_costs": {
+    "longshot_buy_no": {
+      "n": 1310,
+      "gross": 0.0274732824427481,
+      "net": 0.014224742748091605
+    },
+    "favorite_buy_yes": {
+      "n": 620,
+      "gross": 0.03348387096774194,
+      "net": 0.019935706451612904
+    }
+  }
+}
