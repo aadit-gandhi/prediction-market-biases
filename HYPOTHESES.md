@@ -35,3 +35,13 @@ After each test, ask whether a rule exploiting the bias would survive fees and h
 
 ## Deviations
 (none yet)
+
+## Design decisions (made before analysis)
+- 2026-10-22: Kalshi markets listed with API filter mve_filter=exclude (combos removed server-side).
+- 2026-10-22: Max 3 markets per event, so no single event dominates the sample.
+- 2026-10-22: Kalshi sample covers markets closing 2025-06-01 to 2026-10-15; ~99% of Kalshi markets are
+  daily/weekly and fail the 10-day minimum lifetime, so findings apply to longer-dated markets only.
+- 2026-10-22: Polymarket sample limited to markets ending 2025-01-01 to 2026-10-01 with volume >= $10,000,
+  queried in 30-day windows with a per-window cap so the sample spreads across time.
+- 2026-10-22: Price rule: bid/ask midpoint only when spread <= 10 cents; otherwise last trade; otherwise
+  last prior trade; otherwise no price. Source recorded in the `source` column for robustness checks.

@@ -66,9 +66,17 @@ def normalize_market(m: dict) -> dict | None:
         open_time=m.get("open_time"),
         close_time=m.get("close_time") or m.get("expiration_time"),
         outcome=1 if result == "yes" else 0,
-        volume=m.get("volume"),
+        volume=_num(m.get("volume") if m.get("volume") is not None else m.get("volume_fp")),
         aux_id=None,
     )
+
+
+def _num(x):
+    """Volume may arrive as an int, a numeric string (fixed-point fields), or be missing."""
+    try:
+        return None if x is None else float(x)
+    except (TypeError, ValueError):
+        return None
 
 
 def _cents(block: dict | None, key: str = "close") -> float | None:
@@ -82,16 +90,30 @@ def _cents(block: dict | None, key: str = "close") -> float | None:
     return None if d is None else float(d) * 100.0
 
 
-def normalize_candles(ticker: str, candles: list[dict]) -> list[dict]:
-    """Candles -> rows with price in dollars (0-1). Uses bid/ask midpoint when both exist, else last trade."""
+def normalize_candles(ticker: str, candles: list[dict], max_spread: float = 0.10) -> list[dict]:
+    """Candles -> rows with price in dollars (0-1), choosing the most trustworthy price available.
+
+    Priority: (1) bid/ask midpoint, but ONLY if the book is tight (spread <= max_spread);
+              (2) last trade inside the period; (3) last trade before the period (carried forward);
+              otherwise skip. A 1c bid / 99c ask midpoint (50c) is an empty book, not a price.
+    `source` records which rule produced the price so robustness checks can restrict to the best ones.
+    """
     rows = []
     for c in candles:
         last = _cents(c.get("price"))
+        prev = _cents(c.get("price"), "previous")
         bid, ask = _cents(c.get("yes_bid")), _cents(c.get("yes_ask"))
-        mid = (bid + ask) / 2 if (bid and ask) else None
-        px = mid if mid is not None else last
-        if px is None:
-            continue  # no information in this candle
+        tight = (bid is not None and ask is not None and bid > 0 and ask > bid
+                 and (ask - bid) <= max_spread * 100)
+        if tight:
+            px, src = (bid + ask) / 2, "mid"
+        elif last is not None:
+            px, src = last, "trade"
+        elif prev is not None:
+            px, src = prev, "prev_trade"
+        else:
+            continue
+        vol = c.get("volume") if c.get("volume") is not None else c.get("volume_fp")
         rows.append(dict(
             platform="kalshi", market_id=ticker,
             ts=pd.to_datetime(c["end_period_ts"], unit="s"),
@@ -99,6 +121,6 @@ def normalize_candles(ticker: str, candles: list[dict]) -> list[dict]:
             last_price=None if last is None else last / 100.0,
             bid=None if bid is None else bid / 100.0,
             ask=None if ask is None else ask / 100.0,
-            volume=c.get("volume"),
+            volume=_num(vol), source=src,
         ))
     return rows

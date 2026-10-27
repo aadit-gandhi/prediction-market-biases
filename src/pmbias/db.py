@@ -6,7 +6,7 @@ import pandas as pd
 
 MARKET_COLS = ["platform", "market_id", "event_id", "series_id", "question", "category",
                "open_time", "close_time", "outcome", "volume", "aux_id"]
-PRICE_COLS = ["platform", "market_id", "ts", "price", "last_price", "bid", "ask", "volume"]
+PRICE_COLS = ["platform", "market_id", "ts", "price", "last_price", "bid", "ask", "volume", "source"]
 
 SCHEMA = """
 CREATE OR REPLACE TABLE markets (
@@ -15,7 +15,7 @@ CREATE OR REPLACE TABLE markets (
     outcome INTEGER, volume DOUBLE, aux_id VARCHAR);
 CREATE OR REPLACE TABLE prices (
     platform VARCHAR, market_id VARCHAR, ts TIMESTAMP, price DOUBLE,
-    last_price DOUBLE, bid DOUBLE, ask DOUBLE, volume DOUBLE);
+    last_price DOUBLE, bid DOUBLE, ask DOUBLE, volume DOUBLE, source VARCHAR);
 """
 
 

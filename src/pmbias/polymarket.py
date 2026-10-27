@@ -11,6 +11,7 @@ import json
 from typing import Iterator
 
 import pandas as pd
+import requests
 
 from .http import get_json
 
@@ -18,10 +19,20 @@ GAMMA = "https://gamma-api.polymarket.com"
 CLOB = "https://clob.polymarket.com"
 
 
-def iter_markets(max_markets: int | None = None, page: int = 500) -> Iterator[dict]:
+def iter_markets(max_markets: int | None = None, page: int = 500, **filters) -> Iterator[dict]:
+    """Closed markets. Documented filters include end_date_min / end_date_max (ISO timestamps),
+    volume_num_min, order and ascending. Without a date window the API returns the OLDEST markets first,
+    which are pre-CLOB 2021 markets with no price history."""
     n, offset = 0, 0
     while True:
-        data = get_json(GAMMA + "/markets", {"closed": "true", "limit": page, "offset": offset})
+        try:
+            data = get_json(GAMMA + "/markets", {"closed": "true", "limit": page, "offset": offset, **filters})
+        except requests.HTTPError as e:
+            # The API refuses to page past a maximum offset (observed: 422 at offset 2500).
+            # Treat that as "end of this query" and rely on narrower date windows for coverage.
+            if offset > 0 and e.response is not None and e.response.status_code in (400, 422):
+                return
+            raise
         if not data:
             return
         for m in data:
@@ -71,4 +82,4 @@ def fetch_history(token_id: str, fidelity: int = 1440) -> list[dict]:
 def normalize_history(market_id: str, history: list[dict]) -> list[dict]:
     return [dict(platform="polymarket", market_id=market_id,
                  ts=pd.to_datetime(h["t"], unit="s"), price=float(h["p"]),
-                 last_price=float(h["p"]), bid=None, ask=None, volume=None) for h in history]
+                 last_price=float(h["p"]), bid=None, ask=None, volume=None, source="history") for h in history]
