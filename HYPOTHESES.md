@@ -45,3 +45,8 @@ After each test, ask whether a rule exploiting the bias would survive fees and h
   queried in 30-day windows with a per-window cap so the sample spreads across time.
 - 2026-10-22: Price rule: bid/ask midpoint only when spread <= 10 cents; otherwise last trade; otherwise
   last prior trade; otherwise no price. Source recorded in the `source` column for robustness checks.
+
+- Note: the design decisions above were made on 2026-10-22 and committed to git on 2026-10-27. The git commit timestamp is the authoritative record.
+- 2026-10-27: Sample target. Continue collecting until there are at least 400 usable events in total
+  (usable = price available >= 7 days before close, at most 3 days stale). The primary analysis will be run
+  once, after this target is reached. No real-data bias results have been viewed before this point.
